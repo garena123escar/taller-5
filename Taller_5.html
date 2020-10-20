@@ -122,37 +122,20 @@
 		transparent: true
 	});
 
-	var estrato = L.tileLayer.wms('http://idesc.cali.gov.co:8081/geoserver/wms?service=WMS&version=1.1.0', 
-	{
-		layers: 'idesc:est_estrato_social_lado_manzana',
-		attribution: 'Creditos de la capa',
-		format: 'image/png',
-		transparent: true
-	});
-
-	var ciclovia = L.tileLayer.wms('http://idesc.cali.gov.co:8081/geoserver/wms?service=WMS&version=1.1.0', 
-	{
-		layers: '	movilidad:mt_tt_red_cicloinfraestructura',
-		attribution: 'Creditos de la capa',
-		format: 'image/png',
-		transparent: true
-	});
 
     var groupedOverlays = {
 		"Comunas": Comunas,
         "Barrios": Barrios,
-        "Manzanas": manzanas,
-		"Estrato": estrato,
-        "ciclovia": ciclovia     
+        "Manzanas": manzanas   
 	};
 	var Mapas={
         "Mapa Base": basemaps,
         "Escala de Grises": Grayscale,
         "Imagen Satelital": Satelite
     };
-   var corner1 = L.latLng(3.457902778, -76.48720833),
-       corner2 = L.latLng(3.433805556, -76.51918333),
-        bounds = L.latLngBounds(corner1, corner2);
+ //  var corner1 = L.latLng(3.457902778, -76.48720833),
+ //      corner2 = L.latLng(3.433805556, -76.51918333),
+ //       bounds = L.latLngBounds(corner1, corner2);
 
 	var mymap = L.map('mapid',
 	{
@@ -160,7 +143,7 @@
         maxZoom: 20,
         maxBounds: bounds,
         maxBoundsViscosity: 1.0   
-	}).setView([3.445577778,-76.503375], 15).setMinZoom(14);
+	}).setView([3.445577778,-76.503375], 20).setMinZoom(14);
 	
     L.control.scale({position:'bottomleft'}).addTo(mymap);
   
