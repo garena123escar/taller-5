@@ -9,20 +9,18 @@
     <script src="lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.EasyButton/2.4.0/easy-button.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.EasyButton/2.4.0/easy-button.css" />
-	<script src="lib/leaflet-heat.js"></script>
 	<link rel="stylesheet" href="betterscale/L.Control.BetterScale.css" />
-	<script src="graticule/Leaflet.Graticule.js"></script>
     <script src="betterscale/L.Control.BetterScale.js"></script>
     <link rel="stylesheet" href="posición/dist/L.Control.Locate.min.css" />
 	<link rel="stylesheet" href="geocodificar/l.geosearch.css" />
     <script src="posición/src/L.Control.Locate.js" ></script>
 	<script src="geocodificar/l.control.geosearch.js"></script>
     <script src="geocodificar/l.geosearch.provider.esri.js"></script>
-    <link rel="stylesheet" href="glass/leaflet.magnifyingglass.css" />
-    <script src="glass/leaflet.magnifyingglass.js"></script>
 	<script src="https://kit.fontawesome.com/02eb88b373.js" crossorigin="anonymous"></script>
 	<script src='migration/src/src.js'></script>
 	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" rel="stylesheet"/>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
+    <script src="print/leaflet.browser.print.min.js"></script>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -47,21 +45,20 @@
 <!-- -------------contenido------------------------>
 <div class="container-fluid">
     <div class="row">
-		<div class="col-8 border"> <h1>TALLER 3</h1></div>
+		<div class="col-8 border"> <h1>TALLER 5</h1></div>
 		<div class="col-4 border"> <P>DANIEL ESCOBAR CARDONA - 1628277</P></div>
-
     </div>
 </div>
 </div>
 <div class="container-fluid">
     
     <div class="row ">
-        <div class="col-1"></div>
-       <div class="col-2  "> <br><br>
+       <div class="col-3 "> <br><br>
         <button type="button" class="btn btn-outline-primary btn-lg btn-block" onClick="location.reload()" padding="20px 36px">LIMPIAR MAPA</button> <br>
-        <button type="button" class="btn btn-outline-secondary btn-lg btn-block" onClick="añadir()">AÑADIR PUNTOS </button> <br>
-        <button type="button" class="btn btn-outline-secondary btn-lg btn-block" onClick="editar()">EDITAR PUNTOS </button> <br>
-        <button type="button" class="btn btn-outline-danger btn-lg btn-block" onClick="mapa_calor()">MAPA DE CALOR</button> 
+        <button type="button" class="btn btn-outline-secondary btn-lg btn-block" onClick="añadirpunto()">AÑADIR PUNTOS </button> <br>
+        <button type="button" class="btn btn-outline-secondary btn-lg btn-block" onClick="añadirpoligono()">AÑADIR POLIGONO</button> <br>
+        <button type="button" class="btn btn-outline-secondary btn-lg btn-block" onClick="añadirlinea()">AÑADIR LINEA </button> <br>
+
         </div>
        <!-----------------------------MAPA------------------------------>  
         <div class="col-9 align-items-center">
@@ -121,47 +118,28 @@
 		format: 'image/png',
 		transparent: true
 	});
-
-
     var groupedOverlays = {
 		"Comunas": Comunas,
         "Barrios": Barrios,
-        "Manzanas": manzanas   
-	};
+        "Manzanas": manzanas
+    	};
 	var Mapas={
         "Mapa Base": basemaps,
         "Escala de Grises": Grayscale,
         "Imagen Satelital": Satelite
     };
- //  var corner1 = L.latLng(3.457902778, -76.48720833),
- //      corner2 = L.latLng(3.433805556, -76.51918333),
- //       bounds = L.latLngBounds(corner1, corner2);
 
 	var mymap = L.map('mapid',
 	{
 		minZoom: 10,
-        maxZoom: 20,
-        maxBounds: bounds,
-        maxBoundsViscosity: 1.0   
-	}).setView([3.445577778,-76.503375], 20).setMinZoom(14);
+        maxZoom: 20,  
+	}).setView([3.445577778,-76.503375],11).setMinZoom(11);
 	
     L.control.scale({position:'bottomleft'}).addTo(mymap);
-  
-
     
     var leyenda = L.control.layers(Mapas,groupedOverlays).addTo(mymap);
     basemaps.addTo(mymap);
 	Comunas.addTo(mymap);
-
-    L.latlngGraticule({
-                showLabel: true,
-                opacity:1,
-                color: 'black',
-                zoomInterval: [
-                    {start: 10, end: 13, interval: 10},
-                    {start: 14, end: 20, interval: 0.01}
-                ]
-            }).addTo(mymap);
 
     L.control.locate({
         icon:'fa fa-location-arrow',
@@ -178,13 +156,62 @@
         ).addTo(mymap);
 
 	new L.Control.GeoSearch({ searchLabel:'Direccion deseada. Ej: Cra 11 # 62',provider: new L.GeoSearch.Provider.Esri()}).addTo(mymap);
+    
 
 	function onEachFeature(feature, layer) {
     if (feature.properties && feature.properties.popupContent) {
         layer.bindPopup(feature.properties.popupContent);
     }}
 
-	var geojsonFeature = [{
+    var myLines = [{
+    "type": "LineString",
+    "coordinates": [[-76.5173659,3.4422789], [-76.5049867,3.44423874], [-76.5073659,3.4482789]]
+    }];
+    
+    var myStyle = {
+        "color": "#ff7800",
+        "weight": 5,
+        "opacity": 0.65
+    };
+    var linea = L.geoJSON(myLines, {
+        style: myStyle
+    });
+
+    var states = [{
+    "type": "Feature",
+    "properties": {"party": "Americanos"},
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+            [-76.503375,3.445577778],
+            [ -76.508354,3.445897778],
+            [-76.5065987,3.449786452]
+        ]]
+    }
+}, {
+    "type": "Feature",
+    "properties": {"party": "Caleños"},
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+            [-76.509754,3.445577778],
+            [-76.5123659,3.4542789],
+            [-76.5103659,3.4522789],
+            [ -76.508635,3.44486352]
+        ]]
+    }
+}];
+
+var poligono = L.geoJSON(states, {
+    style: function(feature) {
+        switch (feature.properties.party) {
+            case 'Americanos': return {color: "#ff0000"};
+            case 'Caleños':   return {color: "#3eb400"};
+        }
+    }
+});
+
+    var geojsonFeature = [{
     "type": "Feature",
 	"properties": {
         "popupContent": "1"
@@ -296,68 +323,36 @@
 	var marcador1 = L.geoJSON(geojsonFeature, {pointToLayer: function (feature, latlng) 
 	{return L.marker(latlng, {icon: marck})},onEachFeature: onEachFeature});
     
-	function añadir() 
+	function añadirpunto() 
 		{
-		mymap.removeLayer(marcador1);
+		mymap.removeLayer(poligono);
+        mymap.removeLayer(linea);
 		marcador.addTo(mymap);
 	  	};	
 		
-	function editar() 
+	function añadirpoligono() 
 		{
 		mymap.removeLayer(marcador);
-		marcador1.addTo(mymap);		
-	  	};
+        mymap.removeLayer(linea);
+		poligono.addTo(mymap);		
+	  	};	
     
-    L.easyButton('<img src="buscar.png"  align="absmiddle" height="16px" >', function() 
+    function añadirlinea() 
 		{
-		
-            var marcador = L.marker([3.44973333,-76.49114444]);
-            marcador.bindPopup("Esta es tu casa!!!").openPopup();  
-			var magnifyingGlass = L.magnifyingGlass({
-			layers: [ marcador, Satelite ]
-            });
-			mymap.addLayer(magnifyingGlass);
+		mymap.removeLayer(marcador);
+        mymap.removeLayer(poligono);
+		linea.addTo(mymap);		
+	  	};	
 
-	  	},'Zoom a diferente mapa').addTo(mymap);	
-    
-    L.easyButton('<img src="arrow.png"  align="absmiddle" height="16px" >', function() 
-	{
-	
-		var data = [{"from":[-76.49114444,3.44973333],"to":[-76.50758056,3.453847222],"labels":["CASA","PARQUE DE LA CAÑA"],"color":"#ff3a31"}];
-			
-		 data = data.map(item => { return {...item, value: parseInt(100)}});
+    L.control.browserPrint().addTo(mymap);
 
-		 var migrationLayer = new L.migrationLayer({
-				map: mymap,
-				data: data,
-				pulseRadius:20,
-				pulseBorderWidth:3,
-				arcWidth:1,
-				arcLabel:true,
-				arcLabelFont:'15px sans-serif',
-				maxWidth:10
-				}
-		);
-		migrationLayer.addTo(mymap);
-
-	}, 'From-To').addTo(mymap);
-	
-	function mapa_calor() 
-		{	
-		
-		var heat = L.heatLayer([[marcador._layers[106]._latlng.lat,marcador._layers[106]._latlng.lng,10]],{radius: 25}).addTo(mymap);
-		
-		for (var i = 108; i<117; i++){
-
-		heat.addLatLng([marcador._layers[i]._latlng.lat,marcador._layers[i]._latlng.lng,10],{radius: 25});
-
-        };};
-    console.log(marcador);
     L.control.betterscale({position:'bottomright'}).addTo(mymap);
 </script>
 
 <script src="js/jquery-3.5.1.slim.min.js"> </script>      
 <script src="js/popper.min.js"> </script>    
 <script src="js/bootstrap.min.js"> </script> 
+
+
 </body>
 </html>
