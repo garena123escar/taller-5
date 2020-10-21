@@ -3,7 +3,9 @@
 <head>
     <title>Taller 5 SIG WEB</title>
     <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
-	<script src="lib/leaflet/leaflet.js"></script>
+    <script src="lib/leaflet/leaflet.js"></script>
+
+    <script src="js/leaflet.ajax.min.js"></script>
 	
 	<link rel="stylesheet" href="lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css" />
     <script src="lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.js"></script>
@@ -17,10 +19,12 @@
 	<script src="geocodificar/l.control.geosearch.js"></script>
     <script src="geocodificar/l.geosearch.provider.esri.js"></script>
 	<script src="https://kit.fontawesome.com/02eb88b373.js" crossorigin="anonymous"></script>
-	<script src='migration/src/src.js'></script>
 	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" rel="stylesheet"/>
-    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
+    <script src="choropleth/choropleth.js" ></script>
     <script src="print/leaflet.browser.print.min.js"></script>
+    
+
+
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -118,10 +122,15 @@
 		format: 'image/png',
 		transparent: true
 	});
+    
+    var geojsonLayer = new L.GeoJSON.AJAX("restaurantes.geojson");       
+        
+    
     var groupedOverlays = {
 		"Comunas": Comunas,
         "Barrios": Barrios,
-        "Manzanas": manzanas
+        "Manzanas": manzanas,
+        "Restaurantes":geojsonLayer
     	};
 	var Mapas={
         "Mapa Base": basemaps,
@@ -134,12 +143,14 @@
 		minZoom: 10,
         maxZoom: 20,  
 	}).setView([3.445577778,-76.503375],11).setMinZoom(11);
+
 	
     L.control.scale({position:'bottomleft'}).addTo(mymap);
     
     var leyenda = L.control.layers(Mapas,groupedOverlays).addTo(mymap);
     basemaps.addTo(mymap);
 	Comunas.addTo(mymap);
+    geojsonLayer.addTo(mymap);
 
     L.control.locate({
         icon:'fa fa-location-arrow',
@@ -163,6 +174,7 @@
         layer.bindPopup(feature.properties.popupContent);
     }}
 
+   
     var myLines = [{
     "type": "LineString",
     "coordinates": [[-76.5173659,3.4422789], [-76.5049867,3.44423874], [-76.5073659,3.4482789]]
@@ -202,14 +214,15 @@
     }
 }];
 
-var poligono = L.geoJSON(states, {
-    style: function(feature) {
-        switch (feature.properties.party) {
-            case 'Americanos': return {color: "#ff0000"};
-            case 'Caleños':   return {color: "#3eb400"};
+
+    var poligono = L.geoJSON(states, {
+        style: function(feature) {
+            switch (feature.properties.party) {
+                case 'Americanos': return {color: "#ff0000"};
+                case 'Caleños':   return {color: "#3eb400"};
+            }
         }
-    }
-});
+    });
 
     var geojsonFeature = [{
     "type": "Feature",
@@ -323,6 +336,7 @@ var poligono = L.geoJSON(states, {
 	var marcador1 = L.geoJSON(geojsonFeature, {pointToLayer: function (feature, latlng) 
 	{return L.marker(latlng, {icon: marck})},onEachFeature: onEachFeature});
     
+
 	function añadirpunto() 
 		{
 		mymap.removeLayer(poligono);
@@ -332,14 +346,12 @@ var poligono = L.geoJSON(states, {
 		
 	function añadirpoligono() 
 		{
-		mymap.removeLayer(marcador);
         mymap.removeLayer(linea);
 		poligono.addTo(mymap);		
 	  	};	
     
     function añadirlinea() 
 		{
-		mymap.removeLayer(marcador);
         mymap.removeLayer(poligono);
 		linea.addTo(mymap);		
 	  	};	
