@@ -123,7 +123,14 @@
 		transparent: true
 	});
     
-    var geojsonLayer = new L.GeoJSON.AJAX("restaurantes.geojson", {style:marck});       
+    var marck = L.icon({
+				iconUrl: 'iconos/restaurante.png',
+				iconSize:     [37, 37],
+				iconAnchor:   [13, 27],
+				popupAnchor:  [-5,-20] 
+			});
+            
+    var geojsonLayer = new L.GeoJSON.AJAX("restaurantes.geojson", {style: marck});       
         
     
     var groupedOverlays = {
@@ -315,12 +322,7 @@
     }
 	}];		
 	
-	var marck = L.icon({
-				iconUrl: 'iconos/restaurante.png',
-				iconSize:     [37, 37],
-				iconAnchor:   [13, 27],
-				popupAnchor:  [-5,-20] 
-			});
+	
 	var estilo = 
 		{
 			radius: 7,
