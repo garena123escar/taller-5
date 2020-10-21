@@ -123,7 +123,7 @@
 		transparent: true
 	});
     
-    var geojsonLayer = new L.GeoJSON.AJAX("restaurantes.geojson");       
+    var geojsonLayer = new L.GeoJSON.AJAX("restaurantes.geojson", {style:marck});       
         
     
     var groupedOverlays = {
@@ -150,7 +150,6 @@
     var leyenda = L.control.layers(Mapas,groupedOverlays).addTo(mymap);
     basemaps.addTo(mymap);
 	Comunas.addTo(mymap);
-    geojsonLayer.addTo(mymap);
 
     L.control.locate({
         icon:'fa fa-location-arrow',
